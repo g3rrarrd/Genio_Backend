@@ -16,6 +16,7 @@ class RondasViewSet(viewsets.ModelViewSet):
     def iniciar_juego(self, request):
         usuario_id = request.data.get('id_usuario')
         categoria_id = request.data.get('id_categoria')
+        CANTIDAD_PREGUNTAS = 10  # Definimos la constante aquí
 
         if not usuario_id or not categoria_id:
             return Response({"error": "Faltan datos"}, status=status.HTTP_400_BAD_REQUEST)
@@ -23,40 +24,47 @@ class RondasViewSet(viewsets.ModelViewSet):
         try:
             categoria = tbl_categoria.objects.get(id_categoria=categoria_id)
             
+            # 1. Obtenemos las preguntas filtradas por categoría de forma aleatoria directamente
+            preguntas_qs = tbl_preguntas.objects.filter(
+                id_categoria_id=categoria_id
+            ).order_by('?')[:CANTIDAD_PREGUNTAS]
+
+            # 2. Validamos que tengamos las 10 preguntas solicitadas
+            if preguntas_qs.count() < CANTIDAD_PREGUNTAS:
+                return Response({
+                    "error": f"No hay suficientes preguntas en esta categoría. Se requieren {CANTIDAD_PREGUNTAS}."
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            # 3. Creamos la ronda una vez validado el pool de preguntas
             nueva_ronda = tbl_rondas.objects.create(
                 id_usuarios_id=usuario_id,
                 puntaje_total=0.0
             )
+
+            # 4. Registramos la relación en la tabla intermedia
+            for preg in preguntas_qs:
+                tbl_pregunta_ronda.objects.create(
+                    ronda=nueva_ronda,
+                    pregunta=preg,
+                    estado_respuesta=False
+                )
+
+            # 5. Serializamos y retornamos
+            serializer_preguntas = PreguntasSerializer(preguntas_qs, many=True)
+
+            return Response({
+                "ronda_id": nueva_ronda.id_ronda,
+                "preguntas": serializer_preguntas.data,
+                "puntos_categoria": categoria.puntaje,
+                "tiempo_categoria": categoria.tiempo_limite
+            }, status=status.HTTP_201_CREATED)
+
         except tbl_categoria.DoesNotExist:
             return Response({"error": "Categoría no encontrada"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": f"Error: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-        preguntas_pool = list(tbl_preguntas.objects.filter(id_categoria_id=categoria_id))
-        
-        if len(preguntas_pool) < 5:
-            nueva_ronda.delete()
-            return Response({"error": "No hay suficientes preguntas"}, status=status.HTTP_400_BAD_REQUEST)
-
-        preguntas_seleccionadas = random.sample(preguntas_pool, 5)
-
-        for preg in preguntas_seleccionadas:
-            tbl_pregunta_ronda.objects.create(
-                ronda=nueva_ronda,
-                pregunta=preg,
-                estado_respuesta=False
-            )
-
-        serializer_preguntas = PreguntasSerializer(preguntas_seleccionadas, many=True)
-
-        return Response({
-            "ronda_id": nueva_ronda.id_ronda,
-            "preguntas": serializer_preguntas.data,
-            "puntos_categoria": categoria.puntaje,
-            "tiempo_categoria" : categoria.tiempo_limite
-        }, status=status.HTTP_201_CREATED)
-    
-    @action(detail=True, methods=['patch']) # <-- Usamos PATCH para actualización parcial
+    @action(detail=True, methods=['patch'])
     def finalizar(self, request, pk=None):
         ronda = self.get_object()
         puntaje = request.data.get('puntaje_total')
