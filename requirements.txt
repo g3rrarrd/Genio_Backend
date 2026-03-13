@@ -1,0 +1,11 @@
+django>=4.2,<5.0
+django-environ
+
+djangorestframework
+django-cors-headers
+
+mssql-django
+pyodbc
+
+requests
+python-dateutil
