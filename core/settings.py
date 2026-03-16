@@ -60,23 +60,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+IF_AZURE = os.path.exists('/home/site')
+
+if IF_AZURE:
+    if not os.path.exists('/home/data'):
+        os.makedirs('/home/data', exist_ok=True)
+    
+    DB_PATH = '/home/data/db.sqlite3'
+else:
+    # Desarrollo local
+    DB_PATH = BASE_DIR / 'db.sqlite3'
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST'),
-        'PORT': env('DB_PORT'),
-        'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
-            'schema': 'api_genio',
-            'extra_params': (
-                'Encrypt=yes;'
-                'TrustServerCertificate=no;'
-                'Connection Timeout=30;'
-            ),
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': DB_PATH,
     }
 }
 
