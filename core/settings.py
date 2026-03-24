@@ -73,7 +73,7 @@ if IS_AZURE:
             'PORT': '1433',
             'OPTIONS': {
                 'driver': 'ODBC Driver 18 for SQL Server',
-                'schema': 'api_genio', # Tu esquema personalizado
+                'schema': 'genio', # Tu esquema personalizado
                 'extra_params': (
                     'Authentication=ActiveDirectoryMsi;' # Autenticación sin contraseña
                     'Encrypt=yes;'
