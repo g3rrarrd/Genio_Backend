@@ -36,6 +36,8 @@ class UsuariosViewSet(viewsets.ModelViewSet):
     def acceso_directo(self, request):
         email = request.data.get('email')
         name = request.data.get('identificador')
+        telefono = request.data.get('telefono', '')
+        recibir_permisos = request.data.get('recibir_apostemos', False)
 
         usuario = tbl_usuario.objects.filter(correo=email).first()
 
@@ -45,7 +47,8 @@ class UsuariosViewSet(viewsets.ModelViewSet):
             usuario = tbl_usuario.objects.create(
                 correo=email,
                 identificador=name,
-                descripcion="Jugador de Genio"
+                telefono=telefono,
+                permisos=recibir_permisos
             )
             status_code = 201
 

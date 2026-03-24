@@ -8,7 +8,7 @@ class tbl_categoria(models.Model):
     tiempo_limite = models.IntegerField(default=10, blank=False)
 
     class Meta:
-        db_table = '[api_genio].[tbl_categoria]'
+        db_table = 'tbl_categoria'
 
     def __str__(self):
         return self.nombre

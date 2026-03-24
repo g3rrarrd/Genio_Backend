@@ -1,1 +1,3 @@
 .env
+df.sqlite3
+*.pyc

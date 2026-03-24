@@ -31,7 +31,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['https://geniobackend-faawf6f0hbewfdbj.centralus-01.azurewebsites.net', 'geniobackend-faawf6f0hbewfdbj.centralus-01.azurewebsites.net']
+
+ALLOWED_HOSTS = ['127.0.0.1', 'geniobackend-faawf6f0hbewfdbj.centralus-01.azurewebsites.net']
 
 TEMPLATES = [
     {
@@ -61,24 +62,34 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-IF_AZURE = os.path.exists('/home/site')
+IS_AZURE = os.environ.get('WEBSITE_HOSTNAME') is not None
 
-if IF_AZURE:
-    if not os.path.exists('/home/data'):
-        os.makedirs('/home/data', exist_ok=True)
-    
-    DB_PATH = '/home/data/db.sqlite3'
-else:
-    # Desarrollo local
-    DB_PATH = BASE_DIR / 'db.sqlite3'
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_PATH,
+if IS_AZURE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'mssql',
+            'NAME': os.environ.get('DB_NAME'),
+            'HOST': os.environ.get('DB_HOST'),
+            'PORT': '1433',
+            'OPTIONS': {
+                'driver': 'ODBC Driver 18 for SQL Server',
+                'schema': 'api_genio', # Tu esquema personalizado
+                'extra_params': (
+                    'Authentication=ActiveDirectoryMsi;' # Autenticación sin contraseña
+                    'Encrypt=yes;'
+                    'TrustServerCertificate=no;'
+                    'Connection Timeout=30;'
+                ),
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 STATIC_URL = 'static/'
 

@@ -13,7 +13,7 @@ class tbl_preguntas(models.Model):
     explicacion = models.TextField(blank=True)  
 
     class Meta:
-        db_table = '[api_genio].[tbl_preguntas]'
+        db_table = 'tbl_preguntas'
 
     def __str__(self):
         return self.pregunta
@@ -34,4 +34,4 @@ class tbl_pregunta_ronda(models.Model):
 
     class Meta:
         unique_together = ('pregunta', 'ronda')
-        db_table = '[api_genio].[tbl_pregunta_ronda]'
+        db_table = 'tbl_pregunta_ronda'

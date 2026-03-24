@@ -10,7 +10,7 @@ class tbl_rondas(models.Model):
     preguntas = models.ManyToManyField('pregunta.tbl_preguntas', through='pregunta.tbl_pregunta_ronda')
 
     class Meta:
-        db_table = '[api_genio].[tbl_rondas]'
+        db_table = 'tbl_rondas'
 
     def __str__(self):
         return f"Ronda {self.id_ronda} - Usuario {self.id_usuarios}"
