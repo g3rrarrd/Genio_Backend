@@ -3,7 +3,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import tbl_rondas
-from apps.pregunta.models import tbl_preguntas, tbl_pregunta_ronda
+from apps.pregunta.models import tbl_preguntas
+from apps.pregunta_ronda.models import tbl_pregunta_ronda
 from apps.pregunta.serializers import PreguntasSerializer
 from .serializers import RondasSerializer
 from apps.categoria.models import tbl_categoria
