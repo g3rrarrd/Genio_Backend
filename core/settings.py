@@ -77,7 +77,7 @@ if IS_AZURE:
                 'schema': 'app_genio', # Tu esquema personalizado
                 'extra_params': (
                     'Authentication=ActiveDirectoryMsi;'
-                    f'ExternalId={os.environ.get("AZURE_CLIENT_ID")};' # CRITICAL para identidades asignadas por usuario
+                    f'UID={os.environ.get("AZURE_CLIENT_ID")};' # Client ID de la Identidad Asignada
                     'Encrypt=yes;'
                     'TrustServerCertificate=no;'
                     'Connection Timeout=30;'
