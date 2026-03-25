@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'geniobackend-faawf6f0hbewfdbj.centralus-01.azurewebsites.net']
+ALLOWED_HOSTS = ['127.0.0.1', 'geniobackend-faawf6f0hbewfdbj.centralus-01.azurewebsites.net', 'geniomundialista.azurewebsites.net']
 
 TEMPLATES = [
     {
