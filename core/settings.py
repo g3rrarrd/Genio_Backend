@@ -76,7 +76,7 @@ if IS_AZURE:
                 'driver': 'ODBC Driver 18 for SQL Server',
                 'schema': 'app_genio', # Tu esquema personalizado
                 'extra_params': (
-                    'Authentication=ActiveDirectoryDefault;'
+                    'Authentication=ActiveDirectoryMsi;'
                     f'ExternalId={os.environ.get("AZURE_CLIENT_ID")};' # CRITICAL para identidades asignadas por usuario
                     'Encrypt=yes;'
                     'TrustServerCertificate=no;'
