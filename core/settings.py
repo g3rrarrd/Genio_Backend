@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'apps.pregunta',
     'apps.ronda',
     'apps.pregunta_ronda',
+    'apps.diseno',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

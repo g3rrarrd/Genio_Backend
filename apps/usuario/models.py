@@ -8,6 +8,7 @@ class tbl_usuario(models.Model):
     estado = models.BooleanField(default=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     permisos = models.BooleanField(default=False)
+    codigo_diseno = models.CharField(max_length=20, blank=True, default='')
 
     class Meta:
         db_table = 'tbl_usuario'

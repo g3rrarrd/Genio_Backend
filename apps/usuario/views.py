@@ -38,17 +38,23 @@ class UsuariosViewSet(viewsets.ModelViewSet):
         name = request.data.get('identificador')
         telefono = request.data.get('telefono', '')
         recibir_permisos = request.data.get('recibir_apostemos', False)
+        codigo_diseno = (request.data.get('codigo_diseno') or '').strip().upper()
 
         usuario = tbl_usuario.objects.filter(correo=email).first()
 
         if usuario:
+            # Actualizar codigo_diseno si viene en el payload
+            if codigo_diseno:
+                usuario.codigo_diseno = codigo_diseno
+                usuario.save(update_fields=['codigo_diseno'])
             status_code = 200
         else:
             usuario = tbl_usuario.objects.create(
                 correo=email,
                 identificador=name,
                 telefono=telefono,
-                permisos=recibir_permisos
+                permisos=recibir_permisos,
+                codigo_diseno=codigo_diseno,
             )
             status_code = 201
 
@@ -56,6 +62,7 @@ class UsuariosViewSet(viewsets.ModelViewSet):
             "id_usuarios": usuario.id_usuarios,
             "identificador": usuario.identificador,
             "correo": usuario.correo,
+            "codigo_diseno": usuario.codigo_diseno,
             "nuevo_registro": status_code == 201
         }, status=status_code)
     

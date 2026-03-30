@@ -8,9 +8,10 @@ class tbl_preguntas(models.Model):
         on_delete=models.CASCADE, 
         related_name='preguntas'
     )
+    codigo = models.CharField(max_length=20, blank=True, default='', db_index=True)
     pregunta = models.TextField(blank=False)
     respuesta_correcta = models.BooleanField(default=False)
-    explicacion = models.TextField(blank=True)  
+    explicacion = models.TextField(blank=True)
 
     class Meta:
         db_table = 'tbl_preguntas'

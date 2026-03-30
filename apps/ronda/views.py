@@ -17,23 +17,32 @@ class RondasViewSet(viewsets.ModelViewSet):
     def iniciar_juego(self, request):
         usuario_id = request.data.get('id_usuario')
         categoria_id = request.data.get('id_categoria')
-        CANTIDAD_PREGUNTAS = 10  # Definimos la constante aquí
+        codigo = (request.data.get('codigo') or '').strip().upper()
+        CANTIDAD_PREGUNTAS = 10
 
         if not usuario_id or not categoria_id:
             return Response({"error": "Faltan datos"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             categoria = tbl_categoria.objects.get(id_categoria=categoria_id)
-            
-            # 1. Obtenemos las preguntas filtradas por categoría de forma aleatoria directamente
-            preguntas_qs = tbl_preguntas.objects.filter(
-                id_categoria_id=categoria_id
-            ).order_by('?')[:CANTIDAD_PREGUNTAS]
 
-            # 2. Validamos que tengamos las 10 preguntas solicitadas
+            # 1. Filtrar preguntas por código si viene; si no, usar las que no tienen código
+            if codigo:
+                preguntas_qs = tbl_preguntas.objects.filter(
+                    id_categoria_id=categoria_id,
+                    codigo=codigo,
+                ).order_by('?')[:CANTIDAD_PREGUNTAS]
+            else:
+                preguntas_qs = tbl_preguntas.objects.filter(
+                    id_categoria_id=categoria_id,
+                    codigo='',
+                ).order_by('?')[:CANTIDAD_PREGUNTAS]
+
+            # 2. Validamos que tengamos las preguntas suficientes
             if preguntas_qs.count() < CANTIDAD_PREGUNTAS:
+                origen = f"código '{codigo}'" if codigo else "sin código"
                 return Response({
-                    "error": f"No hay suficientes preguntas en esta categoría. Se requieren {CANTIDAD_PREGUNTAS}."
+                    "error": f"No hay suficientes preguntas para {origen}. Se requieren {CANTIDAD_PREGUNTAS}."
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             # 3. Creamos la ronda una vez validado el pool de preguntas
